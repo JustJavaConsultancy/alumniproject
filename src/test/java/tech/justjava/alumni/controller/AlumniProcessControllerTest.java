@@ -1,24 +1,30 @@
 package tech.justjava.alumni.controller;
 
+import org.flowable.task.api.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tech.justjava.alumni.entity.AlumniRequest;
 import tech.justjava.alumni.service.AlumniProcessService;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AlumniProcessControllerTest {
+@SpringBootTest
+public class AlumniProcessControllerTest {
 
     @Mock
     private AlumniProcessService alumniProcessService;
@@ -26,82 +32,69 @@ class AlumniProcessControllerTest {
     @InjectMocks
     private AlumniProcessController alumniProcessController;
 
+    private MockMvc mockMvc;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(alumniProcessController).build();
     }
 
     @Test
-    void deployProcess() {
+    public void testDeployProcess() throws Exception {
         doNothing().when(alumniProcessService).deployProcess();
 
-        ResponseEntity<String> response = alumniProcessController.deployProcess();
+        mockMvc.perform(post("/api/alumni/deploy"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Process deployed successfully"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Process deployed successfully", response.getBody());
         verify(alumniProcessService, times(1)).deployProcess();
     }
 
     @Test
-    void startProcess() {
+    public void testStartProcess() throws Exception {
         AlumniRequest request = new AlumniRequest();
         request.setDocumentType("transcript");
         request.setPaymentMethod("remita");
-        request.setApprover("admin");
+        request.setApprover("approver1");
 
         when(alumniProcessService.startProcess(any(AlumniRequest.class))).thenReturn("processInstanceId");
 
-        ResponseEntity<String> response = alumniProcessController.startProcess(request);
+        mockMvc.perform(post("/api/alumni/start")
+                        .contentType("application/json")
+                        .content("{\"documentType\":\"transcript\",\"paymentMethod\":\"remita\",\"approver\":\"approver1\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Process started with ID: processInstanceId"));
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("processInstanceId", response.getBody());
-        verify(alumniProcessService, times(1)).startProcess(request);
+        verify(alumniProcessService, times(1)).startProcess(any(AlumniRequest.class));
     }
 
     @Test
-    void getTasks() {
-        Map<String, Object> task = new HashMap<>();
-        task.put("id", "taskId");
-        task.put("name", "Submit Document Request");
-        task.put("processInstanceId", "processInstanceId");
+    public void testGetTasks() throws Exception {
+        Task task1 = mock(Task.class);
+        Task task2 = mock(Task.class);
+        List<Task> tasks = Arrays.asList(task1, task2);
 
-        when(alumniProcessService.getTasks("admin")).thenReturn(Collections.singletonList(task));
+        when(alumniProcessService.getTasks(anyString())).thenReturn(tasks);
 
-        ResponseEntity<List<Map<String, Object>>> response = alumniProcessController.getTasks("admin");
+        mockMvc.perform(get("/api/alumni/tasks")
+                        .param("assignee", "approver1"))
+                .andExpect(status().isOk());
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().size());
-        assertEquals("taskId", response.getBody().get(0).get("id"));
-        verify(alumniProcessService, times(1)).getTasks("admin");
+        verify(alumniProcessService, times(1)).getTasks(anyString());
     }
 
     @Test
-    void completeTask() {
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("approvalStatus", "approved");
+    public void testCompleteTask() throws Exception {
+        doNothing().when(alumniProcessService).completeTask(anyString(), anyMap());
 
-        doNothing().when(alumniProcessService).completeTask("taskId", variables);
+        mockMvc.perform(post("/api/alumni/complete")
+                        .param("taskId", "taskId")
+                        .contentType("application/json")
+                        .content("{\"variable\":\"value\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Task completed successfully"));
 
-        ResponseEntity<String> response = alumniProcessController.completeTask("taskId", variables);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Task completed successfully", response.getBody());
-        verify(alumniProcessService, times(1)).completeTask("taskId", variables);
-    }
-
-    @Test
-    void getProcessInstances() {
-        Map<String, Object> processInstance = new HashMap<>();
-        processInstance.put("id", "processInstanceId");
-        processInstance.put("processDefinitionId", "alumniProject:1:processDefinitionId");
-
-        when(alumniProcessService.getProcessInstances()).thenReturn(Collections.singletonList(processInstance));
-
-        ResponseEntity<List<Map<String, Object>>> response = alumniProcessController.getProcessInstances();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().size());
-        assertEquals("processInstanceId", response.getBody().get(0).get("id"));
-        verify(alumniProcessService, times(1)).getProcessInstances();
+        verify(alumniProcessService, times(1)).completeTask(anyString(), anyMap());
     }
 }

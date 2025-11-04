@@ -2,25 +2,31 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Tasks</title>
+    <title>User Tasks</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Tasks</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Task Name</th>
-                <th>Assignee</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="task : ${tasks}">
-                <td th:text="${task.name}"></td>
-                <td th:text="${task.assignee}"></td>
-                <td><a th:href="@{/alumni/complete/{taskId}(taskId=${task.id})}">Complete</a></td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container mt-5">
+        <h1>User Tasks</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Task Name</th>
+                    <th>Assignee</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="task : ${tasks}">
+                    <td th:text="${task.id}"></td>
+                    <td th:text="${task.name}"></td>
+                    <td th:text="${task.assignee}"></td>
+                    <td><a th:href="@{/api/alumni/complete(taskId=${task.id})}" class="btn btn-primary">Complete</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="/webjars/bootstrap/5.3.0/js/bootstrap.min.js"></script>
 </body>
 </html>

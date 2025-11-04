@@ -19,7 +19,8 @@ public class AlumniRequest {
     @NotBlank
     private String paymentMethod;
 
-    private String processInstanceId;
+    @NotBlank
+    private String approver;
 
     // Getters and Setters
     public Long getId() {
@@ -46,11 +47,11 @@ public class AlumniRequest {
         this.paymentMethod = paymentMethod;
     }
 
-    public String getProcessInstanceId() {
-        return processInstanceId;
+    public String getApprover() {
+        return approver;
     }
 
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
+    public void setApprover(String approver) {
+        this.approver = approver;
     }
 }

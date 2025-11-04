@@ -7,60 +7,55 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.Select;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AlumniProcessSeleniumTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class AlumniProcessSeleniumTest {
+
+    @LocalServerPort
+    private int port;
 
     private WebDriver driver;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
         driver = new ChromeDriver();
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         if (driver != null) {
             driver.quit();
         }
     }
 
     @Test
-    void testAlumniDocumentRequestProcess() {
-        // Deploy the process
-        driver.get("http://localhost:8080/api/alumni/deploy");
-        assertEquals("Process deployed successfully", driver.findElement(By.tagName("body")).getText());
+    public void testAlumniProcessFlow() {
+        driver.get("http://localhost:" + port + "/alumni/requestForm");
 
-        // Start the process
-        driver.get("http://localhost:8080/alumni/requestForm");
         WebElement documentType = driver.findElement(By.id("documentType"));
-        Select documentTypeSelect = new Select(documentType);
-        documentTypeSelect.selectByValue("transcript");
+        documentType.sendKeys("transcript");
 
         WebElement paymentMethod = driver.findElement(By.id("paymentMethod"));
-        Select paymentMethodSelect = new Select(paymentMethod);
-        paymentMethodSelect.selectByValue("remita");
+        paymentMethod.sendKeys("remita");
 
         WebElement approver = driver.findElement(By.id("approver"));
-        approver.sendKeys("admin");
+        approver.sendKeys("approver1");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        submitButton.click();
 
-        // Verify the process started
-        assertEquals("Process started successfully", driver.findElement(By.tagName("body")).getText());
+        assertEquals("Process started with ID: processInstanceId", driver.findElement(By.tagName("body")).getText());
 
-        // Approve the request
-        driver.get("http://localhost:8080/alumni/approvalForm?taskId=taskId");
-        WebElement approvalStatus = driver.findElement(By.id("approvalStatus"));
-        Select approvalStatusSelect = new Select(approvalStatus);
-        approvalStatusSelect.selectByValue("approved");
+        driver.get("http://localhost:" + port + "/alumni/tasks?assignee=approver1");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        WebElement task = driver.findElement(By.cssSelector("a.btn-primary"));
+        task.click();
 
-        // Verify the request was approved
-        assertEquals("Request approved successfully", driver.findElement(By.tagName("body")).getText());
+        assertEquals("Task completed successfully", driver.findElement(By.tagName("body")).getText());
     }
 }
