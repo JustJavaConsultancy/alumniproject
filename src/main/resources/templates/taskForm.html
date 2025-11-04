@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Complete Task</title>
+</head>
+<body>
+    <h1>Complete Task</h1>
+    <form th:action="@{/alumni/task/{taskId}(taskId=${task.id})}" th:object="${task}" method="post">
+        <div>
+            <label for="documentType">Document Type:</label>
+            <select id="documentType" th:field="*{documentType}">
+                <option value="transcript">Transcript</option>
+                <option value="certificate">Certificate</option>
+                <option value="letterOfAttestation">Letter of Attestation</option>
+            </select>
+        </div>
+        <div>
+            <label for="paymentMethod">Payment Method:</label>
+            <select id="paymentMethod" th:field="*{paymentMethod}">
+                <option value="remita">Remita</option>
+                <option value="paystack">Paystack</option>
+                <option value="interswitch">Interswitch</option>
+            </select>
+        </div>
+        <div>
+            <label for="paymentVerified">Payment Verified:</label>
+            <input type="checkbox" id="paymentVerified" th:field="*{paymentVerified}"/>
+        </div>
+        <div>
+            <label for="requestApproved">Request Approved:</label>
+            <input type="checkbox" id="requestApproved" th:field="*{requestApproved}"/>
+        </div>
+        <button type="submit">Complete Task</button>
+    </form>
+</body>
+</html>

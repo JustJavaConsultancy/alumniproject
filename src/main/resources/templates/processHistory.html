@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Process History</title>
+</head>
+<body>
+    <h1>Process History</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Process ID</th>
+                <th>Process Name</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="process : ${history}">
+                <td th:text="${process.id}"></td>
+                <td th:text="${process.name}"></td>
+                <td th:text="${process.status}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

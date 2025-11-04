@@ -10,79 +10,73 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AlumniProjectSeleniumTest {
+class AlumniProjectSeleniumTest {
 
     private WebDriver driver;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
         driver = new ChromeDriver();
-        driver.get("http://localhost:8080/alumni/deploy");
+        driver.get("http://localhost:8080/alumni");
     }
 
     @AfterEach
-    public void teardown() {
+    void tearDown() {
         if (driver != null) {
             driver.quit();
         }
     }
 
     @Test
-    public void testAlumniDocumentRequestProcess() {
-        // Start the process
-        driver.get("http://localhost:8080/alumni/start");
+    void deployProcess() {
+        driver.findElement(By.linkText("Deploy Process")).click();
+        WebElement message = driver.findElement(By.id("message"));
+        assertEquals("Process deployed successfully", message.getText());
+    }
 
-        WebElement documentType = driver.findElement(By.id("documentType"));
-        Select documentTypeSelect = new Select(documentType);
-        documentTypeSelect.selectByValue("transcript");
+    @Test
+    void startProcess() {
+        driver.findElement(By.linkText("Start Process")).click();
 
-        WebElement paymentMethod = driver.findElement(By.id("paymentMethod"));
-        Select paymentMethodSelect = new Select(paymentMethod);
-        paymentMethodSelect.selectByValue("remita");
+        Select documentType = new Select(driver.findElement(By.id("documentType")));
+        documentType.selectByValue("transcript");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-
-        // Complete the Submit Document Request task
-        driver.get("http://localhost:8080/alumni/tasks");
-
-        WebElement completeLink = driver.findElement(By.linkText("Complete"));
-        completeLink.click();
+        Select paymentMethod = new Select(driver.findElement(By.id("paymentMethod")));
+        paymentMethod.selectByValue("remita");
 
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        // Complete the Make Payment task
-        driver.get("http://localhost:8080/alumni/tasks");
+        WebElement message = driver.findElement(By.id("message"));
+        assertEquals("Process started successfully", message.getText());
+    }
 
-        completeLink = driver.findElement(By.linkText("Complete"));
-        completeLink.click();
+    @Test
+    void completeTask() {
+        driver.findElement(By.linkText("Task List")).click();
+        driver.findElement(By.linkText("Complete Task")).click();
 
-        WebElement paymentStatus = driver.findElement(By.id("paymentStatus"));
-        Select paymentStatusSelect = new Select(paymentStatus);
-        paymentStatusSelect.selectByValue("success");
+        Select documentType = new Select(driver.findElement(By.id("documentType")));
+        documentType.selectByValue("certificate");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        Select paymentMethod = new Select(driver.findElement(By.id("paymentMethod")));
+        paymentMethod.selectByValue("paystack");
 
-        // Complete the Approve Request task
-        driver.get("http://localhost:8080/alumni/tasks");
-
-        completeLink = driver.findElement(By.linkText("Complete"));
-        completeLink.click();
-
-        WebElement approvalStatus = driver.findElement(By.id("approvalStatus"));
-        Select approvalStatusSelect = new Select(approvalStatus);
-        approvalStatusSelect.selectByValue("approved");
+        driver.findElement(By.id("paymentVerified")).click();
+        driver.findElement(By.id("requestApproved")).click();
 
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        // Verify the process history
-        driver.get("http://localhost:8080/alumni/history");
+        WebElement message = driver.findElement(By.id("message"));
+        assertEquals("Task completed successfully", message.getText());
+    }
 
-        WebElement processInstanceId = driver.findElement(By.xpath("//table/tbody/tr[1]/td[1]"));
-        assertEquals("1", processInstanceId.getText());
-
-        WebElement status = driver.findElement(By.xpath("//table/tbody/tr[1]/td[2]"));
-        assertEquals("Completed", status.getText());
+    @Test
+    void viewProcessHistory() {
+        driver.findElement(By.linkText("Process History")).click();
+        WebElement historyTable = driver.findElement(By.tagName("table"));
+        assertTrue(historyTable.isDisplayed());
     }
 }

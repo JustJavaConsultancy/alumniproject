@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Start Alumni Document Request Process</title>
+</head>
+<body>
+    <h1>Start Alumni Document Request Process</h1>
+    <form th:action="@{/alumni/start}" th:object="${alumniRequest}" method="post">
+        <div>
+            <label for="documentType">Document Type:</label>
+            <select id="documentType" th:field="*{documentType}">
+                <option value="transcript">Transcript</option>
+                <option value="certificate">Certificate</option>
+                <option value="letterOfAttestation">Letter of Attestation</option>
+            </select>
+        </div>
+        <div>
+            <label for="paymentMethod">Payment Method:</label>
+            <select id="paymentMethod" th:field="*{paymentMethod}">
+                <option value="remita">Remita</option>
+                <option value="paystack">Paystack</option>
+                <option value="interswitch">Interswitch</option>
+            </select>
+        </div>
+        <button type="submit">Start Process</button>
+    </form>
+</body>
+</html>
