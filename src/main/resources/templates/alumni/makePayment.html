@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Make Payment</title>
+</head>
+<body>
+    <h1>Make Payment</h1>
+    <form th:action="@{/alumni/task/{taskId}/complete(taskId=${taskId})}" method="post">
+        <p>Please make your payment using the selected payment method.</p>
+        <button type="submit">Confirm Payment</button>
+    </form>
+</body>
+</html>

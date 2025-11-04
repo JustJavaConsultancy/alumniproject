@@ -2,31 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Tasks</title>
-    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+    <title>Tasks</title>
 </head>
 <body>
-<div class="container">
-    <h1>User Tasks</h1>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Task Name</th>
-            <th>Process Instance ID</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="task : ${tasks}">
-            <td th:text="${task.name}">Task Name</td>
-            <td th:text="${task.processInstanceId}">Process Instance ID</td>
-            <td>
-                <a th:href="@{/api/alumni/complete(taskId=${task.id})}" class="btn btn-primary">Complete Task</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<script src="/webjars/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <h1>Tasks</h1>
+    <ul>
+        <li th:each="task : ${tasks}">
+            <a th:href="@{/alumni/task/{taskId}(taskId=${task.id})}" th:text="${task.name}"></a>
+        </li>
+    </ul>
 </body>
 </html>

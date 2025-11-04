@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AlumniProcessSeleniumTest {
@@ -34,8 +35,9 @@ public class AlumniProcessSeleniumTest {
     }
 
     @Test
-    public void testStartProcess() {
-        driver.get("http://localhost:" + port + "/alumni-process/start");
+    public void testAlumniProcessFlow() {
+        // Start the process
+        driver.get("http://localhost:" + port + "/alumni/start");
 
         WebElement documentType = driver.findElement(By.id("documentType"));
         documentType.sendKeys("transcript");
@@ -46,22 +48,50 @@ public class AlumniProcessSeleniumTest {
         WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
         submitButton.click();
 
-        assertEquals("http://localhost:" + port + "/alumni-process/tasks", driver.getCurrentUrl());
-    }
+        // Verify the process started
+        assertTrue(driver.getCurrentUrl().contains("/alumni/tasks"));
 
-    @Test
-    public void testCompleteTask() {
-        driver.get("http://localhost:" + port + "/alumni-process/tasks");
-
-        WebElement taskLink = driver.findElement(By.linkText("Complete"));
+        // Complete the submitRequest task
+        WebElement taskLink = driver.findElement(By.linkText("Submit Document Request"));
         taskLink.click();
 
-        WebElement approval = driver.findElement(By.id("approval"));
-        approval.sendKeys("approved");
+        WebElement documentTypeForm = driver.findElement(By.id("documentType"));
+        documentTypeForm.sendKeys("transcript");
 
-        WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        submitButton.click();
+        WebElement paymentMethodForm = driver.findElement(By.id("paymentMethod"));
+        paymentMethodForm.sendKeys("remita");
 
-        assertEquals("http://localhost:" + port + "/alumni-process/tasks", driver.getCurrentUrl());
+        WebElement submitFormButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        submitFormButton.click();
+
+        // Verify the task is completed
+        assertTrue(driver.getCurrentUrl().contains("/alumni/tasks"));
+
+        // Complete the makePayment task
+        WebElement paymentTaskLink = driver.findElement(By.linkText("Make Payment"));
+        paymentTaskLink.click();
+
+        WebElement confirmPaymentButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        confirmPaymentButton.click();
+
+        // Verify the payment task is completed
+        assertTrue(driver.getCurrentUrl().contains("/alumni/tasks"));
+
+        // Approve the request
+        WebElement approveTaskLink = driver.findElement(By.linkText("Approve Request"));
+        approveTaskLink.click();
+
+        WebElement approveSelect = driver.findElement(By.id("approved"));
+        approveSelect.sendKeys("true");
+
+        WebElement approveSubmitButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        approveSubmitButton.click();
+
+        // Verify the approval task is completed
+        assertTrue(driver.getCurrentUrl().contains("/alumni/tasks"));
+
+        // Verify the process is completed
+        driver.get("http://localhost:" + port + "/alumni/processes");
+        assertTrue(driver.findElement(By.tagName("body")).getText().contains("Alumni Document Request Process"));
     }
 }

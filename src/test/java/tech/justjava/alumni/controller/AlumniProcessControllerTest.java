@@ -1,5 +1,8 @@
 package tech.justjava.alumni.controller;
 
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,20 +10,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
+import tech.justjava.alumni.entity.AlumniRequest;
 import tech.justjava.alumni.service.AlumniProcessService;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class AlumniProcessControllerTest {
+class AlumniProcessControllerTest {
 
     @Mock
     private AlumniProcessService alumniProcessService;
+
+    @Mock
+    private RuntimeService runtimeService;
+
+    @Mock
+    private TaskService taskService;
 
     @Mock
     private Model model;
@@ -29,58 +37,66 @@ public class AlumniProcessControllerTest {
     private AlumniProcessController alumniProcessController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testStartProcessForm() {
-        String viewName = alumniProcessController.startProcessForm(model);
-        assertEquals("alumniProcess/startProcess", viewName);
-        verify(model).addAttribute(eq("processKey"), eq("alumniProject"));
+    void showStartForm() {
+        String viewName = alumniProcessController.showStartForm(model);
+        assertEquals("alumni/start", viewName);
+        verify(model).addAttribute(eq("alumniRequest"), any(AlumniRequest.class));
     }
 
     @Test
-    public void testStartProcess() {
-        String processKey = "alumniProject";
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("documentType", "transcript");
-        variables.put("paymentMethod", "remita");
-
-        String viewName = alumniProcessController.startProcess(processKey, variables);
-        assertEquals("redirect:/alumni-process/tasks", viewName);
-        verify(alumniProcessService).startProcess(processKey, variables);
+    void startProcess() {
+        AlumniRequest alumniRequest = new AlumniRequest();
+        String viewName = alumniProcessController.startProcess(alumniRequest);
+        assertEquals("redirect:/alumni/tasks", viewName);
+        verify(alumniProcessService).startProcess(alumniRequest);
     }
 
     @Test
-    public void testGetTasks() {
-        List<Task> tasks = Arrays.asList(mock(Task.class));
+    void showTasks() {
+        List<Task> tasks = Arrays.asList(mock(Task.class), mock(Task.class));
         when(alumniProcessService.getTasks()).thenReturn(tasks);
 
-        String viewName = alumniProcessController.getTasks(model);
-        assertEquals("alumniProcess/tasks", viewName);
-        verify(model).addAttribute(eq("tasks"), eq(tasks));
+        String viewName = alumniProcessController.showTasks(model);
+        assertEquals("alumni/tasks", viewName);
+        verify(model).addAttribute("tasks", tasks);
     }
 
     @Test
-    public void testGetTaskForm() {
+    void showTaskForm() {
         String taskId = "1";
         Task task = mock(Task.class);
-        when(alumniProcessService.getTask(taskId)).thenReturn(task);
+        when(taskService.createTaskQuery()).thenReturn(mock(TaskService.TaskServiceQuery.class));
+        when(taskService.createTaskQuery().taskId(taskId)).thenReturn(mock(TaskService.TaskServiceQuery.class));
+        when(taskService.createTaskQuery().taskId(taskId).singleResult()).thenReturn(task);
 
-        String viewName = alumniProcessController.getTaskForm(taskId, model);
-        assertEquals("alumniProcess/taskForm", viewName);
-        verify(model).addAttribute(eq("task"), eq(task));
+        when(task.getTaskDefinitionKey()).thenReturn("submitRequest");
+
+        String viewName = alumniProcessController.showTaskForm(taskId, model);
+        assertEquals("alumni/submitRequest", viewName);
+        verify(model).addAttribute("task", task);
+        verify(model).addAttribute("taskId", taskId);
     }
 
     @Test
-    public void testCompleteTask() {
+    void completeTask() {
         String taskId = "1";
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("approval", "approved");
+        String viewName = alumniProcessController.completeTask(taskId, null);
+        assertEquals("redirect:/alumni/tasks", viewName);
+        verify(alumniProcessService).completeTask(taskId, null);
+    }
 
-        String viewName = alumniProcessController.completeTask(taskId, variables);
-        assertEquals("redirect:/alumni-process/tasks", viewName);
-        verify(alumniProcessService).completeTask(taskId, variables);
+    @Test
+    void showProcesses() {
+        List<ProcessInstance> processInstances = Arrays.asList(mock(ProcessInstance.class), mock(ProcessInstance.class));
+        when(alumniProcessService.getProcessInstances()).thenReturn(processInstances);
+
+        String viewName = alumniProcessController.showProcesses(model);
+        assertEquals("alumni/processes", viewName);
+        verify(model).addAttribute("processInstances", processInstances);
     }
 }

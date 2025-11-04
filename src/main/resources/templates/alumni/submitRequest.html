@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Start Alumni Document Request</title>
+    <title>Submit Document Request</title>
 </head>
 <body>
-    <h1>Start Alumni Document Request</h1>
-    <form th:action="@{/alumni/start}" th:object="${alumniRequest}" method="post">
+    <h1>Submit Document Request</h1>
+    <form th:action="@{/alumni/task/{taskId}/complete(taskId=${taskId})}" th:object="${alumniRequest}" method="post">
         <div>
             <label for="documentType">Document Type:</label>
             <select th:field="*{documentType}" id="documentType">

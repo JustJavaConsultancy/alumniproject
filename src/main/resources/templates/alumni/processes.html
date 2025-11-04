@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Processes</title>
+</head>
+<body>
+    <h1>Processes</h1>
+    <ul>
+        <li th:each="processInstance : ${processInstances}">
+            <span th:text="${processInstance.processDefinitionName}"></span>
+            <span th:text="' - ' + ${processInstance.id}"></span>
+        </li>
+    </ul>
+</body>
+</html>

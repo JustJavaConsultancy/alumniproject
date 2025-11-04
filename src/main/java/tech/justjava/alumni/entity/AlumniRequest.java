@@ -19,8 +19,8 @@ public class AlumniRequest {
     @NotBlank
     private String paymentMethod;
 
-    @NotBlank
-    private String approver;
+    private boolean paymentCompleted;
+    private boolean requestApproved;
 
     // Getters and Setters
     public Long getId() {
@@ -47,11 +47,19 @@ public class AlumniRequest {
         this.paymentMethod = paymentMethod;
     }
 
-    public String getApprover() {
-        return approver;
+    public boolean isPaymentCompleted() {
+        return paymentCompleted;
     }
 
-    public void setApprover(String approver) {
-        this.approver = approver;
+    public void setPaymentCompleted(boolean paymentCompleted) {
+        this.paymentCompleted = paymentCompleted;
+    }
+
+    public boolean isRequestApproved() {
+        return requestApproved;
+    }
+
+    public void setRequestApproved(boolean requestApproved) {
+        this.requestApproved = requestApproved;
     }
 }

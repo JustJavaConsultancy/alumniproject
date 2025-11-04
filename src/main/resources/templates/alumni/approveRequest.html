@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Approve Request</title>
+</head>
+<body>
+    <h1>Approve Request</h1>
+    <form th:action="@{/alumni/task/{taskId}/complete(taskId=${taskId})}" method="post">
+        <div>
+            <label for="approved">Approve Request:</label>
+            <select id="approved" name="approved">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
