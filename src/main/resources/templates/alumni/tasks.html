@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks</title>
+</head>
+<body>
+    <h1>Tasks</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Assignee</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.name}"></td>
+                <td th:text="${task.assignee}"></td>
+                <td><a th:href="@{/alumni/complete/{taskId}(taskId=${task.id})}">Complete</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

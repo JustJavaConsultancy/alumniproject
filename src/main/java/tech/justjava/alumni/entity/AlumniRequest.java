@@ -5,7 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 public class AlumniRequest {
@@ -14,14 +13,13 @@ public class AlumniRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Document type is required")
+    @NotBlank
     private String documentType;
 
-    @NotBlank(message = "Payment method is required")
+    @NotBlank
     private String paymentMethod;
 
-    @NotNull(message = "Approver is required")
-    private String approver;
+    private String processInstanceId;
 
     // Getters and Setters
     public Long getId() {
@@ -48,11 +46,11 @@ public class AlumniRequest {
         this.paymentMethod = paymentMethod;
     }
 
-    public String getApprover() {
-        return approver;
+    public String getProcessInstanceId() {
+        return processInstanceId;
     }
 
-    public void setApprover(String approver) {
-        this.approver = approver;
+    public void setProcessInstanceId(String processInstanceId) {
+        this.processInstanceId = processInstanceId;
     }
 }
