@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Start Alumni Process</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>Start Alumni Process</h1>
+    <form th:action="@{/alumni-process/start}" method="post">
+        <div class="mb-3">
+            <label for="processKey" class="form-label">Process Key</label>
+            <input type="text" class="form-control" id="processKey" name="processKey" th:value="${processKey}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="documentType" class="form-label">Document Type</label>
+            <select class="form-select" id="documentType" name="documentType" required>
+                <option value="transcript">Transcript</option>
+                <option value="certificate">Certificate</option>
+                <option value="letterOfAttestation">Letter of Attestation</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="paymentMethod" class="form-label">Payment Method</label>
+            <select class="form-select" id="paymentMethod" name="paymentMethod" required>
+                <option value="remita">Remita</option>
+                <option value="paystack">Paystack</option>
+                <option value="interswitch">Interswitch</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Start Process</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Form</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${task.name}">Task Name</h1>
+    <form th:action="@{/alumni-process/task/complete}" method="post">
+        <input type="hidden" name="taskId" th:value="${task.id}">
+        <div class="mb-3">
+            <label for="approval" class="form-label">Approval</label>
+            <select class="form-select" id="approval" name="approval" required>
+                <option value="approved">Approve</option>
+                <option value="rejected">Reject</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Complete Task</button>
+    </form>
+</div>
+</body>
+</html>

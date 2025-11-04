@@ -1,42 +1,47 @@
 package tech.justjava.alumni.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import tech.justjava.alumni.service.AlumniProcessService;
-import tech.justjava.alumni.entity.AlumniRequest;
 
-import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/alumni")
+@Controller
+@RequestMapping("/alumni-process")
 public class AlumniProcessController {
 
     @Autowired
     private AlumniProcessService alumniProcessService;
 
-    @PostMapping("/deploy")
-    public String deployProcess() {
-        return alumniProcessService.deployProcess();
+    @GetMapping("/start")
+    public String startProcessForm(Model model) {
+        model.addAttribute("processKey", "alumniProject");
+        return "alumniProcess/startProcess";
     }
 
     @PostMapping("/start")
-    public String startProcess(@RequestBody AlumniRequest request) {
-        return alumniProcessService.startProcess(request);
+    public String startProcess(@RequestParam String processKey, @RequestParam Map<String, Object> variables) {
+        alumniProcessService.startProcess(processKey, variables);
+        return "redirect:/alumni-process/tasks";
     }
 
     @GetMapping("/tasks")
-    public List<Map<String, Object>> getTasks(@RequestParam String assignee) {
-        return alumniProcessService.getTasks(assignee);
+    public String getTasks(Model model) {
+        model.addAttribute("tasks", alumniProcessService.getTasks());
+        return "alumniProcess/tasks";
     }
 
-    @PostMapping("/complete")
-    public void completeTask(@RequestParam String taskId, @RequestBody Map<String, Object> variables) {
+    @GetMapping("/task/{taskId}")
+    public String getTaskForm(@PathVariable String taskId, Model model) {
+        model.addAttribute("task", alumniProcessService.getTask(taskId));
+        return "alumniProcess/taskForm";
+    }
+
+    @PostMapping("/task/complete")
+    public String completeTask(@RequestParam String taskId, @RequestParam Map<String, Object> variables) {
         alumniProcessService.completeTask(taskId, variables);
-    }
-
-    @GetMapping("/process-instances")
-    public List<Map<String, Object>> getProcessInstances(@RequestParam String processKey) {
-        return alumniProcessService.getProcessInstances(processKey);
+        return "redirect:/alumni-process/tasks";
     }
 }
