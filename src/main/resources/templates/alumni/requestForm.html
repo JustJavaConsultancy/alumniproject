@@ -2,36 +2,36 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Alumni Document Request</title>
+    <title>Submit Document Request</title>
     <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>Alumni Document Request</h1>
-        <form th:action="@{/api/alumni/start}" method="post" th:object="${alumniRequest}">
-            <div class="mb-3">
-                <label for="documentType" class="form-label">Document Type</label>
-                <select class="form-select" id="documentType" th:field="*{documentType}" required>
-                    <option value="transcript">Transcript</option>
-                    <option value="certificate">Certificate</option>
-                    <option value="letterOfAttestation">Letter of Attestation</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="paymentMethod" class="form-label">Payment Method</label>
-                <select class="form-select" id="paymentMethod" th:field="*{paymentMethod}" required>
-                    <option value="remita">Remita</option>
-                    <option value="paystack">Paystack</option>
-                    <option value="interswitch">Interswitch</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="approver" class="form-label">Approver</label>
-                <input type="text" class="form-control" id="approver" th:field="*{approver}" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Request</button>
-        </form>
-    </div>
-    <script src="/webjars/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+<div class="container">
+    <h1>Submit Document Request</h1>
+    <form th:action="@{/api/alumni/start}" method="post" th:object="${alumniRequest}">
+        <div class="mb-3">
+            <label for="documentType" class="form-label">Document Type</label>
+            <select class="form-select" id="documentType" th:field="*{documentType}" required>
+                <option value="transcript">Transcript</option>
+                <option value="certificate">Certificate</option>
+                <option value="letterOfAttestation">Letter of Attestation</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="paymentMethod" class="form-label">Payment Method</label>
+            <select class="form-select" id="paymentMethod" th:field="*{paymentMethod}" required>
+                <option value="remita">Remita</option>
+                <option value="paystack">Paystack</option>
+                <option value="interswitch">Interswitch</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="approver" class="form-label">Approver</label>
+            <input type="text" class="form-control" id="approver" th:field="*{approver}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<script src="/webjars/bootstrap/5.3.0/js/bootstrap.min.js"></script>
 </body>
 </html>

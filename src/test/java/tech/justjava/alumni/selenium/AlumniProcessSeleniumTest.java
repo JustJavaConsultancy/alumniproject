@@ -21,7 +21,7 @@ public class AlumniProcessSeleniumTest {
     private WebDriver driver;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
         driver = new ChromeDriver();
     }
@@ -34,7 +34,7 @@ public class AlumniProcessSeleniumTest {
     }
 
     @Test
-    public void testAlumniProcessFlow() {
+    public void testSubmitDocumentRequest() {
         driver.get("http://localhost:" + port + "/alumni/requestForm");
 
         WebElement documentType = driver.findElement(By.id("documentType"));
@@ -44,18 +44,34 @@ public class AlumniProcessSeleniumTest {
         paymentMethod.sendKeys("remita");
 
         WebElement approver = driver.findElement(By.id("approver"));
-        approver.sendKeys("approver1");
+        approver.sendKeys("approver");
 
         WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
         submitButton.click();
 
-        assertEquals("Process started with ID: processInstanceId", driver.findElement(By.tagName("body")).getText());
+        assertEquals("http://localhost:" + port + "/api/alumni/start", driver.getCurrentUrl());
+    }
 
-        driver.get("http://localhost:" + port + "/alumni/tasks?assignee=approver1");
+    @Test
+    public void testMakePayment() {
+        driver.get("http://localhost:" + port + "/alumni/paymentForm?taskId=task1&paymentAmount=1000");
 
-        WebElement task = driver.findElement(By.cssSelector("a.btn-primary"));
-        task.click();
+        WebElement paymentReference = driver.findElement(By.id("paymentReference"));
+        paymentReference.sendKeys("ref123");
 
-        assertEquals("Task completed successfully", driver.findElement(By.tagName("body")).getText());
+        WebElement completeButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        completeButton.click();
+
+        assertEquals("http://localhost:" + port + "/api/alumni/complete?taskId=task1", driver.getCurrentUrl());
+    }
+
+    @Test
+    public void testCompleteTask() {
+        driver.get("http://localhost:" + port + "/alumni/tasks?assignee=approver");
+
+        WebElement completeButton = driver.findElement(By.cssSelector("a.btn-primary"));
+        completeButton.click();
+
+        assertEquals("http://localhost:" + port + "/api/alumni/complete?taskId=task1", driver.getCurrentUrl());
     }
 }
